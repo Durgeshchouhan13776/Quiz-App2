@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setup Your Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-cover bg-center h-screen flex items-center justify-center font-sans relative" 
+      style="background-image: url('college-bg.jpg');">
+
+  <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+
+  <div class="relative z-10 bg-gray-900/90 p-8 rounded-3xl shadow-2xl w-96 text-center border border-gray-700">
+    <h2 class="text-2xl font-bold text-blue-400 mb-2">Welcome!</h2>
+    <p class="text-gray-400 text-sm mb-6">Please set a username for the leaderboard</p>
+
+    <input id="custom-username" type="text" 
+           class="w-full p-3 rounded-xl bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-blue-500 mb-4" 
+           placeholder="Enter Username...">
+
+    <button onclick="saveProfile()" 
+            class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded-xl font-bold transition-all active:scale-95">
+      Start Quiz
+    </button>
+  </div>
+
+  <script>
+    function saveProfile() {
+      const name = document.getElementById("custom-username").value.trim();
+      if (name.length < 3) return alert("Name too short!");
+      
+      localStorage.setItem("currentUser", name);
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>
