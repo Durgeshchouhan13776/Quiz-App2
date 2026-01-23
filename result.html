@@ -48,14 +48,14 @@
       const scoreDisplay = document.getElementById("score-display");
       const percentDisplay = document.getElementById("percent-display");
       
-      scoreDisplay.innerText = ${score} / ${total};
+      scoreDisplay.innerText = `${score} / ${total}`;
       const percent = total > 0 ? Math.round((score / total) * 100) : 0;
-      percentDisplay.innerText = ${percent}% Accuracy;
+      percentDisplay.innerText = `${percent}% Accuracy`;
 
       const reviewContainer = document.getElementById("review-container");
       
       if (reviewData.length === 0) {
-        reviewContainer.innerHTML = <p class="text-center text-gray-400 py-10">No review data available. Please finish a quiz first.</p>;
+        reviewContainer.innerHTML = `<p class="text-center text-gray-400 py-10">No review data available. Please finish a quiz first.</p>`;
         return;
       }
 
