@@ -16,7 +16,7 @@
     <div class="relative">
       <button onclick="toggleMenu()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-xl flex items-center space-x-3 transition border border-gray-600">
         <span id="display-name" class="font-medium">User</span>
-        <div id="user-img-container" class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden">
+        <div id="user-img-container" class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden font-bold">
             <span id="initials">U</span>
         </div>
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -24,7 +24,7 @@
 
       <div id="profile-menu" class="hidden absolute right-0 mt-3 w-64 bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl z-50 p-5 backdrop-blur-xl">
         <div class="mb-4 text-center">
-            <p id="user-email" class="text-[10px] text-gray-500 truncate mb-2"></p>
+            <p id="user-email" class="text-[10px] text-gray-400 truncate mb-2 italic"></p>
             <label class="text-[10px] text-blue-400 uppercase font-bold tracking-widest">Update Display Name</label>
             <input id="new-name" type="text" class="w-full mt-2 p-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-white outline-none focus:ring-1 focus:ring-blue-500" placeholder="New username">
             <button onclick="updateName()" class="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-xs py-2 rounded-lg font-bold transition">Save Changes</button>
@@ -37,12 +37,22 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <button onclick="start('HTML')" class="bg-gray-800 hover:bg-blue-600 p-8 rounded-2xl border border-gray-700 transition-all duration-300 shadow-lg text-xl font-bold hover:-translate-y-1">HTML</button>
-    <button onclick="start('CSS')" class="bg-gray-800 hover:bg-blue-600 p-8 rounded-2xl border border-gray-700 transition-all duration-300 shadow-lg text-xl font-bold hover:-translate-y-1">CSS</button>
-    <button onclick="start('JavaScript')" class="bg-gray-800 hover:bg-blue-600 p-8 rounded-2xl border border-gray-700 transition-all duration-300 shadow-lg text-xl font-bold hover:-translate-y-1">JavaScript</button>
-    <button onclick="start('Java')" class="bg-gray-800 hover:bg-blue-600 p-8 rounded-2xl border border-gray-700 transition-all duration-300 shadow-lg text-xl font-bold hover:-translate-y-1">Java</button>
-    <button onclick="start('C++')" class="bg-gray-800 hover:bg-blue-600 p-8 rounded-2xl border border-gray-700 transition-all duration-300 shadow-lg text-xl font-bold hover:-translate-y-1">C++</button>
+  <div class="max-w-4xl mx-auto mb-10">
+    <a href="leaderboard.html" class="w-full flex items-center justify-center gap-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white p-6 rounded-3xl border-b-4 border-indigo-900 transition-all duration-300 shadow-2xl group active:translate-y-1 active:border-b-0">
+      <span class="text-3xl group-hover:rotate-12 transition-transform">🏆</span>
+      <div class="text-left">
+        <p class="text-xs uppercase font-bold opacity-80">Check Rankings</p>
+        <p class="text-xl font-black tracking-wide">VIEW GLOBAL LEADERBOARD</p>
+      </div>
+    </a>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+    <button onclick="start('HTML')" class="bg-gray-800 hover:bg-blue-600 p-10 rounded-3xl border border-gray-700 transition-all duration-300 shadow-lg text-xl font-black hover:-translate-y-2 hover:shadow-blue-500/20">HTML</button>
+    <button onclick="start('CSS')" class="bg-gray-800 hover:bg-blue-600 p-10 rounded-3xl border border-gray-700 transition-all duration-300 shadow-lg text-xl font-black hover:-translate-y-2 hover:shadow-blue-500/20">CSS</button>
+    <button onclick="start('JavaScript')" class="bg-gray-800 hover:bg-blue-600 p-10 rounded-3xl border border-gray-700 transition-all duration-300 shadow-lg text-xl font-black hover:-translate-y-2 hover:shadow-blue-500/20">JavaScript</button>
+    <button onclick="start('Java')" class="bg-gray-800 hover:bg-blue-600 p-10 rounded-3xl border border-gray-700 transition-all duration-300 shadow-lg text-xl font-black hover:-translate-y-2 hover:shadow-blue-500/20">Java</button>
+    <button onclick="start('C++')" class="bg-gray-800 hover:bg-blue-600 p-10 rounded-3xl border border-gray-700 transition-all duration-300 shadow-lg text-xl font-black hover:-translate-y-2 hover:shadow-blue-500/20">C++</button>
   </div>
 
 <script type="module">
@@ -51,13 +61,14 @@
 
   const auth = getAuth(app);
 
-  // --- Auth state check (English Messages) ---
   onAuthStateChanged(auth, (user) => {
     if (user) {
-        const displayName = localStorage.getItem("currentUser") || user.displayName || user.email.split('@')[0];
-        document.getElementById("display-name").innerText = displayName;
+        const defaultName = user.displayName || user.email.split('@')[0];
+        const displayName = localStorage.getItem("currentUser") || defaultName;
         
-        // Agar Google ki photo mil jaye toh use dikhao
+        document.getElementById("display-name").innerText = displayName;
+        document.getElementById("user-email").innerText = user.email; 
+        
         if (user.photoURL) {
             document.getElementById("user-img-container").innerHTML = `<img src="${user.photoURL}" class="w-full h-full object-cover">`;
         } else {
@@ -89,11 +100,12 @@
     window.toggleMenu();
   };
 
+  // --- Updated Logout (Clears all data) ---
   window.logout = async () => {
     if (confirm("Are you sure you want to logout?")) {
       try {
           await signOut(auth);
-          localStorage.removeItem("currentUser");
+          localStorage.clear(); 
           window.location.href = "index.html";
       } catch (error) {
           alert("Logout failed. Please try again.");
