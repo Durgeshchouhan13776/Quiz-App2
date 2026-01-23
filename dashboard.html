@@ -1,25 +1,112 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
+  <title>Quiz Dashboard</title>
 </head>
-<body class="bg-gray-900 text-white p-10">
+<body class="bg-gray-900 text-white p-6 md:p-10 font-sans">
 
-<h1 class="text-2xl mb-6">Choose a Category</h1>
+  <div class="flex justify-between items-center mb-10 bg-gray-800 p-4 rounded-2xl border border-gray-700">
+    <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+      Choose Category
+    </h1>
 
-<div class="grid grid-cols-2 gap-6">
-  <button onclick="start('HTML')" class="bg-gray-700 p-6 rounded">HTML</button>
-  <button onclick="start('CSS')" class="bg-gray-700 p-6 rounded">CSS</button>
-  <button onclick="start('JavaScript')" class="bg-gray-700 p-6 rounded">JavaScript</button>
-  <button onclick="start('Java')" class="bg-gray-700 p-6 rounded">Java</button>
-  <button onclick="start('C++')" class="bg-gray-700 p-6 rounded">C++</button>
-</div>
+    <div class="relative">
+      <button onclick="toggleMenu()" class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-xl flex items-center space-x-3 transition border border-gray-600">
+        <span id="display-name" class="font-medium">User</span>
+        <div id="user-img-container" class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center overflow-hidden">
+            <span id="initials">U</span>
+        </div>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+      </button>
 
-<script>
-function start(cat) {
-  localStorage.setItem("category", cat);
-  window.location.href = "quiz.html";
-}
+      <div id="profile-menu" class="hidden absolute right-0 mt-3 w-64 bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl z-50 p-5 backdrop-blur-xl">
+        <div class="mb-4 text-center">
+            <p id="user-email" class="text-[10px] text-gray-500 truncate mb-2"></p>
+            <label class="text-[10px] text-blue-400 uppercase font-bold tracking-widest">Update Display Name</label>
+            <input id="new-name" type="text" class="w-full mt-2 p-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-white outline-none focus:ring-1 focus:ring-blue-500" placeholder="New username">
+            <button onclick="updateName()" class="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-xs py-2 rounded-lg font-bold transition">Save Changes</button>
+        </div>
+        <hr class="border-gray-700 mb-3">
+        <button onclick="logout()" class="w-full text-left px-2 py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition font-bold text-sm">
+          Logout Account
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <button onclick="start('HTML')" class="bg-gray-800 hover:bg-blue-600 p-8 rounded-2xl border border-gray-700 transition-all duration-300 shadow-lg text-xl font-bold hover:-translate-y-1">HTML</button>
+    <button onclick="start('CSS')" class="bg-gray-800 hover:bg-blue-600 p-8 rounded-2xl border border-gray-700 transition-all duration-300 shadow-lg text-xl font-bold hover:-translate-y-1">CSS</button>
+    <button onclick="start('JavaScript')" class="bg-gray-800 hover:bg-blue-600 p-8 rounded-2xl border border-gray-700 transition-all duration-300 shadow-lg text-xl font-bold hover:-translate-y-1">JavaScript</button>
+    <button onclick="start('Java')" class="bg-gray-800 hover:bg-blue-600 p-8 rounded-2xl border border-gray-700 transition-all duration-300 shadow-lg text-xl font-bold hover:-translate-y-1">Java</button>
+    <button onclick="start('C++')" class="bg-gray-800 hover:bg-blue-600 p-8 rounded-2xl border border-gray-700 transition-all duration-300 shadow-lg text-xl font-bold hover:-translate-y-1">C++</button>
+  </div>
+
+<script type="module">
+  import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { app } from "./firebase.js";
+
+  const auth = getAuth(app);
+
+  // --- Auth state check (English Messages) ---
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+        const displayName = localStorage.getItem("currentUser") || user.displayName || user.email.split('@')[0];
+        document.getElementById("display-name").innerText = displayName;
+        
+        // Agar Google ki photo mil jaye toh use dikhao
+        if (user.photoURL) {
+            document.getElementById("user-img-container").innerHTML = `<img src="${user.photoURL}" class="w-full h-full object-cover">`;
+        } else {
+            document.getElementById("initials").innerText = displayName.charAt(0).toUpperCase();
+        }
+    } else {
+        window.location.href = "index.html";
+    }
+});
+
+  window.toggleMenu = () => {
+    document.getElementById("profile-menu").classList.toggle("hidden");
+  };
+
+  window.start = (cat) => {
+    localStorage.setItem("category", cat);
+    window.location.href = "quiz.html";
+  };
+
+  window.updateName = () => {
+    const newName = document.getElementById("new-name").value.trim();
+    if (newName.length < 3) {
+      return alert("Username must be at least 3 characters long.");
+    }
+    
+    localStorage.setItem("currentUser", newName);
+    document.getElementById("display-name").innerText = newName;
+    alert("Username updated successfully!");
+    window.toggleMenu();
+  };
+
+  window.logout = async () => {
+    if (confirm("Are you sure you want to logout?")) {
+      try {
+          await signOut(auth);
+          localStorage.removeItem("currentUser");
+          window.location.href = "index.html";
+      } catch (error) {
+          alert("Logout failed. Please try again.");
+      }
+    }
+  };
+
+  window.onclick = (e) => {
+    if (!e.target.closest('.relative')) {
+        const menu = document.getElementById("profile-menu");
+        if (menu) menu.classList.add("hidden");
+    }
+  };
 </script>
 
 </body>
