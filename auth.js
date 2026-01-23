@@ -107,7 +107,7 @@ window.handleGoogleLogin = async () => {
     }
 };
 
-// --- FORGOT PASSWORD ---
+
 window.handleForgotPassword = async () => {
     const email = document.getElementById("email").value.trim();
     if (!email) return alert("Please enter your email address to receive a reset link.");
